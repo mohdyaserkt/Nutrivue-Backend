@@ -172,3 +172,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+serviceAccountKey.json
+.env
+__pycache__/
+*.pyc
