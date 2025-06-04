@@ -2,9 +2,12 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.config.firebase import initialize_firebase
-initialize_firebase()
+
 from src.config.config import get_settings
 from src.api.v1.routers import api_router
+
+from src.core.cache import init_cache
+
 
 app = FastAPI(
     title=get_settings().PROJECT_NAME,
@@ -15,6 +18,12 @@ app = FastAPI(
     redoc_url=f"{get_settings().API_V1_STR}/redoc",
 )
 
+@app.on_event("startup")
+async def startup():
+    await init_cache()  # Initialize Redis connection
+    initialize_firebase()
+
+    
 # Set up CORS
 app.add_middleware(
     CORSMiddleware,

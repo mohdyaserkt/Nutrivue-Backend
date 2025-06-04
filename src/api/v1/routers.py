@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi import Depends
-from src.api.v1.endpoints import  public, protected,user
+from src.api.v1.endpoints import  public, protected,user,calorie
 from src.core.security import get_current_active_user
 api_router = APIRouter()
 
@@ -17,4 +17,12 @@ api_router.include_router(
     prefix="/users",
     tags=["users"],
     dependencies=[Depends(get_current_active_user)]  # Protect all user routes
+)
+
+
+api_router.include_router(
+    calorie.router,
+    prefix="/calorie",
+    tags=["calorie"],
+    dependencies=[Depends(get_current_active_user)]  # Protected route
 )

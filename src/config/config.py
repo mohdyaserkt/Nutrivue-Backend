@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     DB_HOST:str
     DB_PORT:str
     DB_NAME:str
+    GOOGLE_API_KEY: str
+    REDIS_URL: str
+    CACHE_EXPIRE_HOURS: int
     class Config:
         case_sensitive = True
         env_file = ".env"
