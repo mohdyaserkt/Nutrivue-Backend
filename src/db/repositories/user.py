@@ -42,5 +42,7 @@ class UserRepository:
             return int(maintenance * 0.85)
         elif profile.goal == "gain":
             return int(maintenance * 1.15)
+        elif profile.goal=="custom":
+            return int(profile.customCalorie)
         return int(maintenance)
     
