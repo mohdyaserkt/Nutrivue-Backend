@@ -1,6 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional,List
 from enum import Enum
+from datetime import datetime
+from uuid import UUID
 class TokenData(BaseModel):
     uid: str
     email: Optional[str] = None
@@ -81,3 +83,51 @@ class UserProfileResponse(UserProfileCreate):
     id: str
     target_calories: Optional[int]
     created_at: str
+
+
+
+
+class NutrientInfo(BaseModel):
+    protein_g: float
+    carbohydrates_g: float
+    fats_g: float
+
+class FoodItem(BaseModel):
+    name: str
+    calories_per_gram: float
+    nutrients: NutrientInfo
+
+class LoggedFoodItem(FoodItem):
+    weight_grams: float
+    # calculated_calories: float
+
+class FoodLogCreate(BaseModel):
+    food_name: str
+    weight_grams: float
+    calories_per_gram: float
+    nutrients: NutrientInfo
+    meal_type: Optional[str] = None
+    notes: Optional[str] = None
+
+class FoodLogResponse(BaseModel):
+    id: UUID
+    user_id: str
+    food_name: str
+    weight_grams: float
+    calories_consumed: float
+    protein_g: float
+    carbs_g: float
+    fats_g: float
+    meal_type: Optional[str]
+    logged_at: datetime
+    image_url: Optional[str]
+
+class Config:
+    orm_mode = True
+
+
+class FoodLogBatchCreate(BaseModel):
+    items: List[LoggedFoodItem]  # Reusing your existing LoggedFoodItem
+    meal_type: str = None
+    notes: str = None
+    image_url: str = None  # Optional reference to scanned image
