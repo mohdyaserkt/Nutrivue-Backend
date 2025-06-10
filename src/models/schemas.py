@@ -1,7 +1,7 @@
 from pydantic import BaseModel
-from typing import Optional,List
+from typing import Optional,List,Dict
 from enum import Enum
-from datetime import datetime
+from datetime import datetime,date
 from uuid import UUID
 class TokenData(BaseModel):
     uid: str
@@ -131,3 +131,21 @@ class FoodLogBatchCreate(BaseModel):
     meal_type: str = None
     notes: str = None
     image_url: str = None  # Optional reference to scanned image
+    
+class DailyNutritionSummary(BaseModel):
+    date: date
+    total_calories: float
+    total_protein: float
+    total_carbs: float
+    total_fats: float
+
+class DailyNutritionSummary(BaseModel):
+    total_calories: float
+    total_protein: float
+    total_carbs: float
+    total_fats: float
+
+class MonthlyNutritionResponse(BaseModel):
+    year: int
+    month: int
+    daily_summaries: Dict[date, DailyNutritionSummary]
