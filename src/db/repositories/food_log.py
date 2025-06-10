@@ -134,3 +134,60 @@ class FoodLogRepository:
             )
         
         return monthly_data
+    # In your FoodLogRepository class (src/db/repositories/food_log.py)
+
+    async def get_daily_details(
+        self,
+        user_id: str,
+        target_date: date
+    ) -> dict:
+        """Get detailed daily nutrition including all food items"""
+        # Get the daily summary
+        summary_result = await self.db.execute(
+            select(
+                func.sum(FoodLog.calories_consumed).label("total_calories"),
+                func.sum(FoodLog.protein_g).label("total_protein"),
+                func.sum(FoodLog.carbs_g).label("total_carbs"),
+                func.sum(FoodLog.fats_g).label("total_fats")
+            )
+            .where(FoodLog.user_id == user_id)
+            .where(func.date(FoodLog.logged_at) == target_date)
+        )
+        
+        summary = summary_result.first()
+        
+        # Get all individual food items for the day
+        items_result = await self.db.execute(
+            select(FoodLog)
+            .where(FoodLog.user_id == user_id)
+            .where(func.date(FoodLog.logged_at) == target_date)
+            .order_by(FoodLog.logged_at.asc())
+        )
+        
+        items = items_result.scalars().all()
+        
+        return {
+            "date": target_date.isoformat(),
+            "summary": {
+                "total_calories": summary.total_calories or 0,
+                "total_protein": summary.total_protein or 0,
+                "total_carbs": summary.total_carbs or 0,
+                "total_fats": summary.total_fats or 0
+            },
+            "items": [
+                {
+                    "id": str(item.id),
+                    "food_name": item.food_name,
+                    "weight_grams": item.weight_grams,
+                    "calories_consumed": item.calories_consumed,
+                    "protein_g": item.protein_g,
+                    "carbs_g": item.carbs_g,
+                    "fats_g": item.fats_g,
+                    "meal_type": item.meal_type,
+                    "logged_at": item.logged_at.isoformat(),
+                    "notes": item.notes,
+                    "image_url": item.image_url
+                }
+                for item in items
+            ]
+        }

@@ -3,10 +3,10 @@ from fastapi.responses import JSONResponse
 from src.core.security import get_current_active_user
 from src.db.repositories.food_log import FoodLogRepository
 from src.db.session import get_db
-from src.models.schemas import FoodLogResponse,FoodLogBatchCreate,DailyNutritionSummary,MonthlyNutritionResponse
+from src.models.schemas import FoodLogResponse,FoodLogBatchCreate,DailyNutritionSummary,MonthlyNutritionResponse,DailyDetailsResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
-
+from datetime import date
 router = APIRouter()
 
 @router.post("/log/batch", response_model=List[FoodLogResponse])
@@ -70,3 +70,23 @@ async def get_monthly_nutrition_summary(
         "month": month,
         "daily_summaries": daily_summaries
     }
+
+# In your food_log.py router file
+
+@router.get("/log/daily/{target_date}", response_model=DailyDetailsResponse)
+async def get_daily_details(
+    target_date: date,
+    current_user: dict = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db)
+):
+    repo = FoodLogRepository(db)
+    try:
+        return await repo.get_daily_details(
+            current_user["uid"],
+            target_date
+        )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )

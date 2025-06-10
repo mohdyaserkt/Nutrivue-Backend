@@ -149,3 +149,28 @@ class MonthlyNutritionResponse(BaseModel):
     year: int
     month: int
     daily_summaries: Dict[date, DailyNutritionSummary]
+
+    # In your schemas file (src/models/schemas.py)
+
+from pydantic import BaseModel
+from datetime import datetime, date
+from typing import List
+
+class FoodItemDetail(BaseModel):
+    id: str
+    food_name: str
+    weight_grams: float
+    calories_consumed: float
+    protein_g: float
+    carbs_g: float
+    fats_g: float
+    meal_type: str | None
+    logged_at: datetime
+    notes: str | None
+    image_url: str | None
+
+
+class DailyDetailsResponse(BaseModel):
+    date: date
+    summary: DailyNutritionSummary
+    items: List[FoodItemDetail]
