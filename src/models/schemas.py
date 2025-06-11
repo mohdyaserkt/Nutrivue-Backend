@@ -76,7 +76,7 @@ class UserProfileCreate(BaseModel):
     height_cm: float
     activity_level: ActivityLevel
     goal: Goal
-    customCalorie:int
+    customCalorie: Optional[int] = None 
     
 
 class UserProfileResponse(UserProfileCreate):

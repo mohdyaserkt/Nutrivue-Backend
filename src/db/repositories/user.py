@@ -9,7 +9,7 @@ class UserRepository:
         user = await self.db.get(User, user_id)
         
         if not user:
-            user = User(id=user_id,email=email,**profile_data.model_dump(),
+            user = User(id=user_id,email=email,**profile_data.model_dump(exclude={"customCalorie"}),
                 target_calories=self._calculate_calories(profile_data))
             self.db.add(user)
         else:
