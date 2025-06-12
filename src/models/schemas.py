@@ -78,7 +78,22 @@ class UserProfileCreate(BaseModel):
     goal: Goal
     customCalorie: Optional[int] = None 
     
+class UserOut(BaseModel):
+    id: str
+    email: str
+    name: Optional[str]
+    is_active: bool
+    age: int
+    gender: str
+    weight_kg: float
+    height_cm: float
+    activity_level: str
+    goal: str
+    target_calories: Optional[int]
+    created_at: datetime  # <-- Fix: must be datetime, not str
 
+    class Config:
+        orm_mode = True
 class UserProfileResponse(UserProfileCreate):
     id: str
     target_calories: Optional[int]

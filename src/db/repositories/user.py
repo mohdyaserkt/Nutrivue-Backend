@@ -1,6 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.models.user import User
 from src.models.schemas import UserProfileCreate
+from typing import Optional
+from sqlalchemy import select
+
 class UserRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
@@ -46,3 +49,8 @@ class UserRepository:
             return int(profile.customCalorie)
         return int(maintenance)
     
+    async def get_user_profile(self, user_id: str) -> Optional[User]:
+            result = await self.db.execute(
+                select(User).where(User.id == user_id)
+            )
+            return result.scalars().first()
